@@ -13,11 +13,9 @@ module IRB
 
   class Irb
     def output_value
-      if @context.inspect?
-        @context.output_method.printf @context.return_format, @context.last_value.inspect
-      else
-        @context.output_method.printf @context.return_format, @context.last_value
-      end
+      c = @context
+      val = c.inspect? ? c.last_value.inspect : c.last_value
+      c.output_method.printf c.return_format, val
     end
   end
 end
@@ -118,6 +116,16 @@ class GUIRBOutputMethod < IRB::OutputMethod
   end
 end
 
+class GUIRBStderr
+  def initialize(output)
+    @output = output
+  end
+
+  def write(*opts)
+    @output.print(*opts)
+  end
+end
+
 module IRB
 	def IRB.start_in_gui(im, om)
 	  IRB.setup(nil)
@@ -155,6 +163,13 @@ class IrbRunner
 
     @om = GUIRBOutputMethod.new(output)
 		@im = GUIRBInputMethod.new(self, @om)
+
+    # for some reason setting $stderr doesn't work, but this does
+    # (we can still distinguish between $stderr and $stdout since
+    # normal output is already redirected to @om by overriding
+    # Irb#output_value above
+    $DEFAULT_OUTPUT = GUIRBStderr.new(output)
+
 		@irb = Thread.new {
 			IRB.start_in_gui(@im, @om)
 		}
