@@ -6,16 +6,66 @@ class TkIrb < TkText
 
   def initialize(container, status)
     super(container)
-    bind("Key-Return") {
-      Tk.callback_break unless process_commandline
-    }
+    setup_bindings
     @anchor = index('insert')
     @status = status
+  end
+
+  def brk
+    Tk.callback_break
+  end
+
+  def setup_bindings
+    bind("Key-Return") {
+      brk unless process_commandline
+    }
+
+    for k in %w(BackSpace Left) do
+      bind("Key-#{k}") {
+        brk unless after_anchor?
+      }
+    end
+
+    bind("Key-Delete") {
+      brk if before_anchor?
+    }
+
+    bind("Key-Home") {
+      set_insert @anchor
+      brk
+    }
+
+    bind("Key-Up") {
+      clear
+      brk
+    }
+
+  end
+
+  def clear
+    delete(@anchor, 'end')
   end
 
   def print(obj)
     insert('end', obj.to_s)
     @anchor = index('insert')
+  end
+
+  def cmp_anchor
+    ix = index('insert')
+    (@anchor.split(".") <=> ix.split("."))
+  end
+
+  def after_anchor?
+    cmp_anchor == -1
+  end
+
+  def before_anchor?
+    cmp_anchor == 1
+  end
+
+  def at_anchor?
+    cmp_anchor == 0
   end
 
   def process_commandline
@@ -25,7 +75,7 @@ class TkIrb < TkText
     end
 
     ix = index('insert')
-    return false if (@anchor.split(".") <=> ix.split(".")) > -1
+    return false if not after_anchor?
 
     txt = get(@anchor, ix)
     @irb.process_commandline(txt)
