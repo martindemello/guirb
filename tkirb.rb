@@ -36,7 +36,18 @@ class TkIrb < TkText
     }
 
     bind("Key-Up") {
-      clear
+      if (s = @irb.history(:prev))
+        clear
+        insert 'end', s
+      end
+      brk
+    }
+
+    bind("Key-Down") {
+      if (s = @irb.history(:next))
+        clear
+        insert 'end', s
+      end
       brk
     }
 

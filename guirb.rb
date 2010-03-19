@@ -194,10 +194,7 @@ class IrbRunner
 
 	def history(dir)
 		str = (dir == :prev) ? @im.prev_cmd.chomp : @im.next_cmd.chomp
-		if str != ""
-			clear_frame
-			write(str)
-		end
+		str if str != ""
 	end
 
   def get_line
