@@ -21,7 +21,7 @@ module IRB
 end
 
 class GUIRBInputMethod < IRB::StdioInputMethod
-	attr_accessor :print_prompt, :gets_mode
+  attr_accessor :print_prompt, :gets_mode
 
   def initialize(input, output)
     super()
@@ -127,42 +127,42 @@ class GUIRBStderr
 end
 
 module IRB
-	def IRB.start_in_gui(im, om)
-	  IRB.setup(nil)
+  def IRB.start_in_gui(im, om)
+    IRB.setup(nil)
 
-		irb = Irb.new(nil, im, om)
+    irb = Irb.new(nil, im, om)
 
-		@CONF[:IRB_RC].call(irb.context) if @CONF[:IRB_RC]
-		@CONF[:MAIN_CONTEXT] = irb.context
-		trap("SIGINT") do
-			irb.signal_handle
-		end
+    @CONF[:IRB_RC].call(irb.context) if @CONF[:IRB_RC]
+    @CONF[:MAIN_CONTEXT] = irb.context
+    trap("SIGINT") do
+      irb.signal_handle
+    end
 
-		class << irb.context.workspace.main
-			def gets
-				inp = IRB.conf[:MAIN_CONTEXT].io
-				inp.gets_mode = true
-				retval = IRB.conf[:MAIN_CONTEXT].io.gets
-				inp.gets_mode = false
-				retval
-			end
-		end
+    class << irb.context.workspace.main
+      def gets
+        inp = IRB.conf[:MAIN_CONTEXT].io
+        inp.gets_mode = true
+        retval = IRB.conf[:MAIN_CONTEXT].io.gets
+        inp.gets_mode = false
+        retval
+      end
+    end
 
-		catch(:IRB_EXIT) do
-			irb.eval_input
-		end
-		print "\n"
-	end
+    catch(:IRB_EXIT) do
+      irb.eval_input
+    end
+    print "\n"
+  end
 end
 
 class IrbRunner
   def initialize(output)
     IRB.conf[:LC_MESSAGES] = IRB::Locale.new
-		@inputAdded = 0
-		@input = IO.pipe
+    @inputAdded = 0
+    @input = IO.pipe
 
     @om = GUIRBOutputMethod.new(output)
-		@im = GUIRBInputMethod.new(self, @om)
+    @im = GUIRBInputMethod.new(self, @om)
 
     # for some reason setting $stderr doesn't work, but this does
     # (we can still distinguish between $stderr and $stdout since
@@ -170,41 +170,41 @@ class IrbRunner
     # Irb#output_value above
     $DEFAULT_OUTPUT = GUIRBStderr.new(output)
 
-		@irb = Thread.new {
-			IRB.start_in_gui(@im, @om)
-		}
+    @irb = Thread.new {
+      IRB.start_in_gui(@im, @om)
+    }
 
-		@multiline = false
+    @multiline = false
 
-		@exit_proc = lambda {exit}
+    @exit_proc = lambda {exit}
   end
 
-	def process_commandline(cmd)
-		multiline = false
-		lines = cmd.split(/\n/)
-		lines.each {|i|
-			@input[1].puts i
-			@inputAdded += 1
-		}
+  def process_commandline(cmd)
+    multiline = false
+    lines = cmd.split(/\n/)
+    lines.each {|i|
+      @input[1].puts i
+      @inputAdded += 1
+    }
 
-		while (@inputAdded > 0) do
-			@irb.run
-		end
-	end
+    while (@inputAdded > 0) do
+      @irb.run
+    end
+  end
 
-	def history(dir)
-		str = (dir == :prev) ? @im.prev_cmd.chomp : @im.next_cmd.chomp
-		str if str != ""
-	end
+  def history(dir)
+    str = (dir == :prev) ? @im.prev_cmd.chomp : @im.next_cmd.chomp
+    str if str != ""
+  end
 
   def get_line
-		if @inputAdded == 0
-			Thread.stop
-		end
-		@inputAdded -= 1
-		retval = @input[0].gets
-		# don't print every prompt for multiline input
-		@im.print_prompt = (@inputAdded == 0)
-		return retval
-	end
+    if @inputAdded == 0
+      Thread.stop
+    end
+    @inputAdded -= 1
+    retval = @input[0].gets
+    # don't print every prompt for multiline input
+    @im.print_prompt = (@inputAdded == 0)
+    return retval
+  end
 end
