@@ -94,24 +94,26 @@ class TkIrb < TkText
   end
 end
 
-Thread.abort_on_exception = true
-root = TkRoot.new() { title "TkIRB" }
-frame = TkFrame.new(root).pack("side"=>"right")
-buttons = TkFrame.new(frame).pack("side"=>"bottom")
-quit = TkButton.new(buttons) {
-  text "Exit"
-  command lambda { exit }
-}
-TkGrid.configure(quit)
-display = TkFrame.new(root).pack("side"=>"left")
-status = TkLabel.new(display)
-editor = TkIrb.new(display, status).pack()  # top
-irb = IrbRunner.new(editor)
-editor.irb = irb
-status.pack("side"=>"bottom", "anchor"=>"w")
-frame.pack("fill"=>"y")
-display.pack("fill"=>"both", "expand"=>true)
-status.pack("before"=>editor)
-editor.pack("fill"=>"both", "expand"=>true)
-editor.focus
-Tk.mainloop()
+if __FILE__ == $0
+  Thread.abort_on_exception = true
+  root = TkRoot.new() { title "TkIRB" }
+  frame = TkFrame.new(root).pack("side"=>"right")
+  buttons = TkFrame.new(frame).pack("side"=>"bottom")
+  quit = TkButton.new(buttons) {
+    text "Exit"
+    command lambda { exit }
+  }
+  TkGrid.configure(quit)
+  display = TkFrame.new(root).pack("side"=>"left")
+  status = TkLabel.new(display)
+  editor = TkIrb.new(display, status).pack()  # top
+  irb = IrbRunner.new(editor)
+  editor.irb = irb
+  status.pack("side"=>"bottom", "anchor"=>"w")
+  frame.pack("fill"=>"y")
+  display.pack("fill"=>"both", "expand"=>true)
+  status.pack("before"=>editor)
+  editor.pack("fill"=>"both", "expand"=>true)
+  editor.focus
+  Tk.mainloop()
+end
