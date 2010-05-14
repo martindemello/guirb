@@ -1,0 +1,29 @@
+Graphical frontend for IRB
+
+AUTHOR:
+  Martin DeMello <martindemello@gmail.com>
+
+LICENSE:
+  Same as Ruby's
+
+DEVELOPER NOTES:
+* Branched off from fxirb, which is no longer maintained
+
+* Using Tk as the default toolkit now, because it's the only one that installed
+  painlessly on ruby 1.9.1
+  - Also, the Tk text component is a pleasure to work with
+
+* Design goals: 
+  - Separate the toolkit-specific bits into their own files, and
+    have an include file `guirb.rb` for the common support code
+  - Should be easy to add a frontend for your favourite toolkit
+  - Should be easy to use this as the basis of an embeddable irb component in
+    an IDE
+
+* Long term goals:
+  - Write a UI with better support for multiline commands, either with a
+    two-pane view (see [dreampie](http://dreampie.sourceforge.net/) for
+    example) or a [mathematica](http://www.wolfram.com/)-style notebook view
+  - Write a [drscheme](http://www.plt-scheme.org/)-like IDE with good support
+    for loading a program into the REPL, trying out bits of code interactively,
+    and moving them into the editing pane when they're perfected
