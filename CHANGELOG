@@ -1,0 +1,8 @@
+0.02: 2010-05-28
+* Application-configurable behaviour when IRB exits, so that it can be used as
+  a widget
+* fxirb is back!
+
+0.01: 2010-05-15
+* Basic guirb layer
+* tkirb
