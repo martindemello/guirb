@@ -1,0 +1,4 @@
+See BUGS and README for short- and long-term goals
+
+* Add more emacs/readline keybindings
+* Test on windows and mac [platform maintainers needed!]
