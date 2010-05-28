@@ -10,6 +10,15 @@ class TkIrb < TkText
     setup_bindings
     @anchor = cursor
     @status = status
+    @exit_proc = lambda {}
+  end
+
+  def on_irb_exit(&block)
+    @exit_proc = block
+  end
+
+  def handle_irb_exit
+    instance_eval(&@exit_proc)
   end
 
   def cursor
@@ -53,6 +62,13 @@ class TkIrb < TkText
     get(@anchor - 2, @anchor) == "  "
   end
 
+  def history(dir)
+    if (s = @irb.history(dir))
+      clear
+      insert 'end', s
+    end
+  end
+
   def auto_dedent
     x = line
     return unless indented?
@@ -90,6 +106,7 @@ if __FILE__ == $0
   display = TkFrame.new(root).pack("side"=>"left")
   status = TkLabel.new(display)
   editor = TkIrb.new(display, status).pack()  # top
+  editor.on_irb_exit {exit}
   irb = IrbRunner.new(editor)
   editor.irb = irb
   status.pack("side"=>"bottom", "anchor"=>"w")

@@ -24,18 +24,12 @@ class TkText
     }
 
     bind("Key-Up") {
-      if (s = @irb.history(:prev))
-        clear
-        insert 'end', s
-      end
+      history(:prev)
       brk
     }
 
     bind("Key-Down") {
-      if (s = @irb.history(:next))
-        clear
-        insert 'end', s
-      end
+      history(:next)
       brk
     }
 
@@ -44,7 +38,7 @@ class TkText
     }
 
     bind("Control-d") {
-      exit
+      on_irb_exit
     }
   end
 end
