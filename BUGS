@@ -1,5 +1,5 @@
-* puts is not working
+[tkirb] puts is not working
 
-* view does not scroll-to-end when output text overflows the screen, even though we are calling yview_pickplace
+[tkirb] view does not scroll-to-end when output text overflows the screen, even though we are calling yview_pickplace
 
-* autodedent doesn't match the end-block token to the start-block one
+[all]   autodedent doesn't match the end-block token to the start-block one
