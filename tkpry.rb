@@ -1,9 +1,9 @@
 require 'tk'
-require_relative 'guirb'
+require_relative 'guipry'
 require_relative 'tkkeys'
 
-class TkIrb < TkText
-  attr_accessor :irb
+class TkPry < TkText
+  attr_accessor :repl
 
   def initialize(container, status)
     super(container)
@@ -37,9 +37,16 @@ class TkIrb < TkText
     delete(@anchor, 'end')
   end
 
-  def print(obj)
+  def puts(obj)
     insert('end', obj.to_s)
     @anchor = cursor
+  end
+
+  def tty?
+    true
+  end
+
+  def flush
   end
 
   def cmp_anchor
@@ -63,7 +70,7 @@ class TkIrb < TkText
   end
 
   def history(dir)
-    if (s = @irb.history(dir))
+    if (s = repl.history(dir))
       clear
       insert 'end', s
     end
@@ -79,7 +86,7 @@ class TkIrb < TkText
   end
 
   def can_process_commandline
-    unless @irb
+    unless repl
       @status.text = "irb not ready"
       return false
     end
@@ -89,7 +96,7 @@ class TkIrb < TkText
   end
 
   def process_commandline
-    @irb.process_commandline(line)
+    repl.process_commandline(line)
   end
 end
 
@@ -105,10 +112,9 @@ if __FILE__ == $0
   TkGrid.configure(quit)
   display = TkFrame.new(root).pack("side"=>"left")
   status = TkLabel.new(display)
-  editor = TkIrb.new(display, status).pack()  # top
+  editor = TkPry.new(display, status).pack()  # top
   editor.on_irb_exit {exit}
-  irb = IrbRunner.new(editor)
-  editor.irb = irb
+  editor.repl = PryRunner.new(editor)
   status.pack("side"=>"bottom", "anchor"=>"w")
   frame.pack("fill"=>"y")
   display.pack("fill"=>"both", "expand"=>true)
