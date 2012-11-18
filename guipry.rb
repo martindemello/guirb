@@ -3,6 +3,26 @@ require 'pry'
 require "English"
 require 'thread'
 
+class GuiPryStdout < IO
+  def initialize(output)
+    @output = output
+  end
+
+  def print(*opts)
+    opts = opts.map(&:to_s)
+    @output.print(*opts)
+  end
+
+  def write(*opts)
+    opts = opts.map(&:to_s)
+    @output.print(*opts)
+  end
+
+  def flush
+    # we aren't buffering anything
+  end
+end
+
 class PryRunner
   attr_accessor :repl
 
@@ -13,7 +33,9 @@ class PryRunner
     @history_cursor = 0
     @history = []
 
-    @repl = Thread.new do 
+    $DEFAULT_OUTPUT = GuiPryStdout.new(output)
+
+    @repl = Thread.new do
       Pry.config.color = false
       Pry.config.correct_indent = false
       Pry.history.pusher = method(:add_history)
