@@ -61,10 +61,10 @@ class GUIRBInputMethod < IRB::StdioInputMethod
     @history -= delta
 
     if print_prompt
-      @output.print @prompt
+      @output.puts @prompt
 
       #indentation
-      @output.print "  "*level
+      @output.puts "  "*level
     end
 
     str = @input.get_line
@@ -112,7 +112,7 @@ class GUIRBOutputMethod < IRB::OutputMethod
   end
 
   def print(*opts)
-    @output.print(*opts)
+    @output.puts(*opts)
   end
 end
 
@@ -122,7 +122,7 @@ class GUIRBStderr
   end
 
   def write(*opts)
-    @output.print(*opts)
+    @output.puts(*opts)
   end
 end
 
@@ -159,7 +159,7 @@ class IrbRunner
   def initialize(output)
     IRB.conf[:LC_MESSAGES] = IRB::Locale.new
     @inputAdded = 0
-    @input = IO.pipe
+    @input_reader, @input_writer = IO.pipe
 
     @om = GUIRBOutputMethod.new(output)
     @im = GUIRBInputMethod.new(self, @om)
@@ -183,7 +183,7 @@ class IrbRunner
     multiline = false
     lines = cmd.split(/\n/)
     lines.each {|i|
-      @input[1].puts i
+      @input_writer.puts i
       @inputAdded += 1
     }
 
@@ -202,7 +202,7 @@ class IrbRunner
       Thread.stop
     end
     @inputAdded -= 1
-    retval = @input[0].gets
+    retval = @input_reader.gets
     # don't print every prompt for multiline input
     @im.print_prompt = (@inputAdded == 0)
     return retval

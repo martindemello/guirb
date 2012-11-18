@@ -38,7 +38,7 @@ class TkText
     }
 
     bind("Control-d") {
-      handle_irb_exit
+      handle_repl_exit
     }
   end
 end
