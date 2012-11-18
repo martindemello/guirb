@@ -10,10 +10,14 @@ class PryRunner
     @inputAdded = 0
     @input_reader, @input_writer = IO.pipe
     @output = output
+    @history_cursor = 0
+    @history = []
 
     @repl = Thread.new do 
       Pry.config.color = false
       Pry.config.correct_indent = false
+      Pry.history.pusher = method(:add_history)
+      Pry.history.clearer = method(:clear_history)
       Pry.start(0, :input => self, :output => output)
     end
   end
@@ -30,18 +34,28 @@ class PryRunner
     end
   end
 
+  def add_history(cmd)
+    @history.push(cmd)
+  end
+
+  def clear_history(cmd)
+    @history = []
+  end
+
   def history(dir)
-    str = (dir == :prev) ? @im.prev_cmd.chomp : @im.next_cmd.chomp
-    str if str != ""
+    @history_cursor += (dir == :prev) ? 1 : -1
+    if @history_cursor > 0
+      @history[-@history_cursor]
+    end
   end
 
   def readline(prompt)
     if @inputAdded == 0
+      @history_cursor = 0
       @output.puts prompt
       Thread.stop
     end
     @inputAdded -= 1
-    retval = @input_reader.gets
-    return retval
+    @input_reader.gets
   end
 end
