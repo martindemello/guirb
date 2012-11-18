@@ -61,10 +61,10 @@ class GUIRBInputMethod < IRB::StdioInputMethod
     @history -= delta
 
     if print_prompt
-      @output.puts @prompt
+      @output.print @prompt
 
       #indentation
-      @output.puts "  "*level
+      @output.print "  "*level
     end
 
     str = @input.get_line
@@ -112,7 +112,8 @@ class GUIRBOutputMethod < IRB::OutputMethod
   end
 
   def print(*opts)
-    @output.puts(*opts)
+    opts = opts.map(&:to_s)
+    @output.print(*opts)
   end
 end
 
@@ -122,7 +123,12 @@ class GUIRBStderr
   end
 
   def write(*opts)
-    @output.puts(*opts)
+    opts = opts.map(&:to_s)
+    @output.print(*opts)
+  end
+
+  def flush
+    # we aren't buffering anything
   end
 end
 
