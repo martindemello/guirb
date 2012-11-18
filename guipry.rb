@@ -18,7 +18,7 @@ class PryRunner
       Pry.config.correct_indent = false
       Pry.history.pusher = method(:add_history)
       Pry.history.clearer = method(:clear_history)
-      Pry.start(0, :input => self, :output => output)
+      Pry.start(nil, :input => self, :output => output)
     end
   end
 
@@ -52,7 +52,7 @@ class PryRunner
   def readline(prompt)
     if @inputAdded == 0
       @history_cursor = 0
-      @output.puts prompt
+      @output.print prompt
       Thread.stop
     end
     @inputAdded -= 1
