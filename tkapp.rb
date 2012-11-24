@@ -22,6 +22,7 @@ class Application
     status.pack("before"=>editor)
     editor.pack("fill"=>"both", "expand"=>true)
     editor.focus
+    @editor = editor
   end
 end
 
