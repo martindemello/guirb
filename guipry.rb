@@ -40,7 +40,7 @@ class PryRunner
       Pry.config.correct_indent = false
       Pry.history.pusher = method(:add_history)
       Pry.history.clearer = method(:clear_history)
-      Pry.start(nil, :input => self, :output => output)
+      Pry.start(TOPLEVEL_BINDING, :input => self, :output => output)
     end
   end
 
