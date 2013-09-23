@@ -40,7 +40,9 @@ class PryRunner
       Pry.config.correct_indent = false
       Pry.history.pusher = method(:add_history)
       Pry.history.clearer = method(:clear_history)
-      Pry.start(TOPLEVEL_BINDING, :input => self, :output => output)
+      print = proc { |output, value| output.puts "=> #{value.inspect}" }
+      Pry.start(TOPLEVEL_BINDING, :input => self, :output => output,
+                :print => print)
     end
   end
 
