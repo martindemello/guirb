@@ -8,13 +8,17 @@ class GuiPryStdout < IO
     @output = output
   end
 
+  def clean_ansi(s)
+    # strip off cursor movement ansi sequences
+    s.gsub(/\e\[\d+[ABEFG]/, '')
+  end
+
   def print(*opts)
-    opts = opts.map(&:to_s)
-    @output.print(*opts)
+    write(*opts)
   end
 
   def write(*opts)
-    opts = opts.map(&:to_s)
+    opts = opts.map(&:to_s).map {|i| clean_ansi(i)}
     @output.print(*opts)
   end
 
