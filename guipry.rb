@@ -59,7 +59,7 @@ class PryRunner
   end
 
   def add_history(cmd)
-    @history.push(cmd)
+    @history.push(cmd.rstrip)
   end
 
   def clear_history(cmd)
